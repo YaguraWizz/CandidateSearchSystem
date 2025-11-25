@@ -1,23 +1,24 @@
-# Используем официальный образ .NET SDK для сборки
+# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Копируем csproj и восстанавливаем зависимости
-COPY *.csproj ./
-RUN dotnet restore
+# Копируем solution и весь проект
+COPY CandidateSearchSystem.sln ./
+COPY CandidateSearchSystem/ ./CandidateSearchSystem/
 
-# Копируем весь проект и собираем
-COPY . ./
-RUN dotnet publish -c Release -o /app/publish
+# Восстанавливаем зависимости по solution
+RUN dotnet restore CandidateSearchSystem.sln
 
-# Финальный образ для запуска
+# Публикуем проект (Blazor Server/Server проект)
+RUN dotnet publish CandidateSearchSystem.sln -c Release -o /app/publish
+
+# Stage 2: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Экспонируем порты
-EXPOSE 7232
-EXPOSE 5150
+# Проброс портов
+EXPOSE 8080
 
-# Запуск приложения
-ENTRYPOINT ["dotnet", "YourProjectName.dll"]
+# Запуск приложения (замените на нужный dll)
+ENTRYPOINT ["dotnet", "CandidateSearchSystem.dll"]
