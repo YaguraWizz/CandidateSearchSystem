@@ -1,0 +1,62 @@
+[
+  {
+    "ContainingType": "CandidateSearchSystem.Extensions.ApplicationBuilderExtensions\u002B\u003C\u003Ec",
+    "Method": "\u003CMapAccountApiEndpoints\u003Eb__1_0",
+    "RelativePath": "api/Account/login",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CandidateSearchSystem.Data.DTOs.LoginFormDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CandidateSearchSystem.Extensions.ApplicationBuilderExtensions\u002B\u003C\u003Ec",
+    "Method": "\u003CMapAccountApiEndpoints\u003Eb__1_2",
+    "RelativePath": "api/Account/logout",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "CandidateSearchSystem.Extensions.ApplicationBuilderExtensions\u002B\u003C\u003Ec",
+    "Method": "\u003CMapAccountApiEndpoints\u003Eb__1_1",
+    "RelativePath": "api/Account/register",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "CandidateSearchSystem.Data.DTOs.RegisterFormDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  }
+]

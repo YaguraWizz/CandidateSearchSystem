@@ -1,0 +1,123 @@
+﻿@* /favorites	Favorites.razor	Список избранных кандидатов. *@
+@page "/favorites"
+@using System.Collections.Generic
+@using System.Linq
+
+<h3>🌟 Избранные Кандидаты</h3>
+
+<div class="container-fluid">
+    @if (FavoriteCandidates.Any())
+    {
+        <p class="text-muted">Всего избранных: **@FavoriteCandidates.Count()**</p>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var favorite in FavoriteCandidates)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">@favorite.Candidate.FirstName @favorite.Candidate.LastName</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@favorite.Candidate.DesiredJobTitle (@favorite.Candidate.City)</h6>
+
+                            <hr />
+
+                            <dl class="row mb-0">
+                                <dt class="col-sm-6">Зарплата (желаемая):</dt>
+                                <dd class="col-sm-6 fw-bold">@favorite.Candidate.DesiredSalary.ToString("N0") @favorite.Candidate.SalaryCurrency</dd>
+
+                                <dt class="col-sm-6">Общий опыт:</dt>
+                                <dd class="col-sm-6">@favorite.Candidate.TotalYearsOfExperience лет</dd>
+
+                                <dt class="col-sm-6">Добавлено:</dt>
+                                <dd class="col-sm-6">@favorite.AddedAt.ToLocalTime().ToString("dd.MM.yyyy")</dd>
+                            </dl>
+
+                            @if (!string.IsNullOrWhiteSpace(favorite.RecruiterNotes))
+                            {
+                                <div class="alert alert-info mt-3 p-2 small">
+                                    **Заметки рекрутера:** @favorite.RecruiterNotes
+                                </div>
+                            }
+
+                            <div class="d-grid mt-3">
+                                <button class="btn btn-outline-primary btn-sm">Посмотреть профиль</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            У вас пока нет избранных кандидатов. Используйте поиск, чтобы найти подходящих специалистов!
+        </div>
+    }
+</div>
+
+@code {
+    // ====================================================================
+    // ДАННЫЕ (ИМИТАЦИЯ ПОЛУЧЕНИЯ ДАННЫХ С СЕРВЕРА)
+    // ====================================================================
+    private List<RecruiterCandidateFavoriteDto> FavoriteCandidates { get; set; } = new List<RecruiterCandidateFavoriteDto>();
+
+    protected override void OnInitialized()
+    {
+        // Имитация загрузки данных
+        FavoriteCandidates = new List<RecruiterCandidateFavoriteDto>
+        {
+            new RecruiterCandidateFavoriteDto
+            {
+                RecruiterProfileId = Guid.NewGuid(),
+                AddedAt = DateTimeOffset.UtcNow.AddDays(-5),
+                RecruiterNotes = "Отличный опыт в C#, идеально для проекта Alpha.",
+                Candidate = new CandidateProfileSummaryDto
+                {
+                    UserId = Guid.NewGuid(),
+                    FirstName = "Екатерина",
+                    LastName = "Смирнова",
+                    DesiredJobTitle = "Senior Backend Developer",
+                    City = "Москва",
+                    DesiredSalary = 4500,
+                    SalaryCurrency = Currency.USD,
+                    TotalYearsOfExperience = 8
+                }
+            },
+            new RecruiterCandidateFavoriteDto
+            {
+                RecruiterProfileId = Guid.NewGuid(),
+                AddedAt = DateTimeOffset.UtcNow.AddDays(-1),
+                RecruiterNotes = null,
+                Candidate = new CandidateProfileSummaryDto
+                {
+                    UserId = Guid.NewGuid(),
+                    FirstName = "Алексей",
+                    LastName = "Петров",
+                    DesiredJobTitle = "Product Manager",
+                    City = "Санкт-Петербург",
+                    DesiredSalary = 300000,
+                    SalaryCurrency = Currency.RUB,
+                    TotalYearsOfExperience = 5
+                }
+            },
+             new RecruiterCandidateFavoriteDto
+            {
+                RecruiterProfileId = Guid.NewGuid(),
+                AddedAt = DateTimeOffset.UtcNow.AddDays(-15),
+                RecruiterNotes = "Подходит для стартапа, готов к командировкам.",
+                Candidate = new CandidateProfileSummaryDto
+                {
+                    UserId = Guid.NewGuid(),
+                    FirstName = "Мария",
+                    LastName = "Козлова",
+                    DesiredJobTitle = "Junior UX/UI Designer",
+                    City = "Екатеринбург",
+                    DesiredSalary = 1200,
+                    SalaryCurrency = Currency.EUR,
+                    TotalYearsOfExperience = 1
+                }
+            }
+        };
+    }
+}

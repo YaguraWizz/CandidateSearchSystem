@@ -1,0 +1,46 @@
+﻿/* Minimal local styles that complement Bootstrap without using other frameworks */
+.lead {
+    max-width: 55ch;
+}
+
+.gap-2 {
+    gap: .5rem;
+}
+
+/* Make hero svg responsive inside its column */
+svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Slight elevation for cards */
+.border.rounded {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.03);
+}
+
+/* Эффект свечения и интерактивности для всех карточек (назовем их card-glow) */
+.card-glow {
+    border: 1px solid #e9ecef; /* Тонкая рамка для контраста с нижней линией */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    .card-glow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+        transform: translateY(-2px); /* Небольшой подъем при наведении */
+    }
+
+/* Измененный общий стиль для .border.rounded, чтобы обеспечить фон/тень */
+.border.rounded {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.03);
+}
+
+/* Дополнительно: используем более темный текст, чем text-muted, для лучшей читаемости */
+.text-secondary {
+    color: #495057 !important;
+}
+
+@media (max-width: 768px) {
+    .lead {
+        max-width: none;
+    }
+}

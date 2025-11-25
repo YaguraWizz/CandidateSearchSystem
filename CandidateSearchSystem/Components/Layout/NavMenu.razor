@@ -1,0 +1,100 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">HR-Decision Portal</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        @* ========================================================= *@
+        @* ОБЩИЕ ССЫЛКИ *@
+        @* ========================================================= *@
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill" aria-hidden="true"></span> Главная
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="profile">
+                <span class="bi bi-person-circle" aria-hidden="true"></span> Мой Профиль
+            </NavLink>
+        </div>
+
+
+        @* ========================================================= *@
+        @* ССЫЛКИ ДЛЯ КАНДИДАТА (Candidate) *@
+        @* ========================================================= *@
+        <AuthorizeView Roles="@ApplicationRole.Candidate">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="tests">
+                        <span class="bi bi-file-earmark-bar-graph-fill" aria-hidden="true"></span> Тесты / Оценки
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="interactions">
+                        <span class="bi bi-envelope-fill" aria-hidden="true"></span> Мои Приглашения
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+
+        @* ========================================================= *@
+        @* ССЫЛКИ ДЛЯ РЕКРУТЕРА (Recruiter) И АДМИНА *@
+        @* ========================================================= *@
+        @* Поскольку Админ имеет все права Рекрутера, мы объединяем их в одну AuthorizeView *@
+        <AuthorizeView Roles="@(ApplicationRole.Recruiter + "," + ApplicationRole.Admin)">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="search">
+                        <span class="bi bi-search" aria-hidden="true"></span> Поиск Кандидатов
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="favorites">
+                        <span class="bi bi-star-fill" aria-hidden="true"></span> Избранные
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="invitations">
+                        <span class="bi bi-clock-history" aria-hidden="true"></span> Взаимодействий
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        @* ========================================================= *@
+        @* ССЫЛКИ ДЛЯ АДМИНА (Admin) *@
+        @* ========================================================= *@
+        <AuthorizeView Roles="@ApplicationRole.Admin">
+            <Authorized>
+                <div class="nav-item px-3">
+                    @* Эту ссылку мы сделаем главной для админки, где будут подссылки на UsersManagement и NewsManagement *@
+                    <NavLink class="nav-link" href="admin-dashboard">
+                        <span class="bi bi-gear-fill" aria-hidden="true"></span> Управление
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+
+        @* ========================================================= *@
+        @* КНОПКА ВЫХОДА (ЛОГАУТ) *@
+        @* ========================================================= *@
+        <div class="mt-auto logout-form">
+            @* Используем класс logout-form для стилей *@
+            <div class="nav-item px-3">
+                <form action="/api/Account/logout" method="post" class="w-100">
+                    <AntiforgeryToken />
+                    <button type="submit" class="nav-link btn btn-link text-start w-100">
+                        <span aria-hidden="true"></span> Выход
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</div>

@@ -1,0 +1,113 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = CandidateSearchSystem
+build_property.RootNamespace = CandidateSearchSystem
+build_property.ProjectDir = D:\Dev\Frilans\CandidateSearchSystem\CandidateSearchSystem\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\Dev\Frilans\CandidateSearchSystem\CandidateSearchSystem
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Layout/EmptyLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcRW1wdHlMYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Admin/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxEYXNoYm9hcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Admin/NewsManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxOZXdzTWFuYWdlbWVudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Admin/UsersManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxVc2Vyc01hbmFnZW1lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Candidate/Experience.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYW5kaWRhdGVcRXhwZXJpZW5jZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Candidate/Interactions.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYW5kaWRhdGVcSW50ZXJhY3Rpb25zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Candidate/Skills.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYW5kaWRhdGVcU2tpbGxzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Candidate/Tests.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYW5kaWRhdGVcVGVzdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/NoCandidate/Favorites.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb0NhbmRpZGF0ZVxGYXZvcml0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/NoCandidate/Invitations.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb0NhbmRpZGF0ZVxJbnZpdGF0aW9ucy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/NoCandidate/Search.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb0NhbmRpZGF0ZVxTZWFyY2gucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/NoCandidate/UpdateUserAccountForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb0NhbmRpZGF0ZVxVcGRhdGVVc2VyQWNjb3VudEZvcm0ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Shared/Authorization.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaGFyZWRcQXV0aG9yaXphdGlvbi5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Shared/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaGFyZWRcRXJyb3IucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Shared/Modals/ProfileEditModal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaGFyZWRcTW9kYWxzXFByb2ZpbGVFZGl0TW9kYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Shared/Profile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaGFyZWRcUHJvZmlsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-90eld9r5gw
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-l8mtwbimi0
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Shared/NewsFeed.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaGFyZWRcTmV3c0ZlZWQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-vv7l0xjmmo
+
+[D:/Dev/Frilans/CandidateSearchSystem/CandidateSearchSystem/Components/Pages/Shared/Welcome.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTaGFyZWRcV2VsY29tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-anxhgbjrp9

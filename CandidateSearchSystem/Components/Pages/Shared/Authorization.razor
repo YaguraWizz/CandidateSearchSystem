@@ -1,0 +1,185 @@
+﻿@using CandidateSearchSystem.Components.Layout
+@using Microsoft.AspNetCore.Http
+@page "/account/authorization"
+@rendermode InteractiveServer
+@layout EmptyLayout
+
+<PageTitle>Авторизация / Регистрация</PageTitle>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; background-color: #f8f9fa;">
+    <div class="card shadow-lg" style="width: 100%; max-width: 450px;">
+        <div class="card-header bg-primary text-white text-center py-3">
+            <h4 class="mb-0">Вход или Регистрация</h4>
+        </div>
+
+        <div class="card-body p-4">
+            <ul class="nav nav-pills nav-justified mb-4" id="authTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button @onclick="@(() => SetActiveTab("login"))"
+                            class="nav-link @(ActiveTab == "login" ? "active" : "")"
+                            id="login-tab"
+                            type="button"
+                            role="tab"
+                            aria-controls="login-form-pane"
+                            aria-selected="@(ActiveTab == "login")">
+                        Вход
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button @onclick="@(() => SetActiveTab("register"))"
+                            class="nav-link @(ActiveTab == "register" ? "active" : "")"
+                            id="register-tab"
+                            type="button"
+                            role="tab"
+                            aria-controls="register-form-pane"
+                            aria-selected="@(ActiveTab == "register")">
+                        Регистрация
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="authTabsContent">
+
+                <div class="tab-pane fade @(ActiveTab == "login" ? "show active" : "")"
+                     id="login-form-pane"
+                     role="tabpanel"
+                     aria-labelledby="login-tab"
+                     tabindex="0">
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <form method="post" action="/api/Account/login">
+                        <AntiforgeryToken />
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="loginEmail" name="@nameof(LoginFormDTO.Email)" placeholder="name@example.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="loginPassword" name="@nameof(LoginFormDTO.Password)" required>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Войти</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade @(ActiveTab == "register" ? "show active" : "")"
+                     id="register-form-pane"
+                     role="tabpanel"
+                     aria-labelledby="register-tab"
+                     tabindex="0">
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <form method="post" action="/api/Account/register">
+                        <AntiforgeryToken />
+                        <div class="mb-3">
+                            <label for="registerFirstName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="registerFirstName" name="@nameof(RegisterFormDTO.FirstName)" placeholder="Ваше имя" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="registerEmail" name="@nameof(RegisterFormDTO.Email)" placeholder="name@example.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="registerPassword" name="@nameof(RegisterFormDTO.Password)" minlength="6" maxlength="100" required>
+                            <div class="form-text">Минимум 6 символов.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerConfirmPassword" class="form-label">Подтверждение пароля</label>
+                            <input type="password" class="form-control" id="registerConfirmPassword" name="@nameof(RegisterFormDTO.ConfirmPassword)" required>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">Зарегистрироваться</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private PersistentComponentState ApplicationState { get; set; } = default!;
+
+    private string ActiveTab { get; set; } = "login";
+    private string? errorMessage { get; set; }
+    private PersistingComponentStateSubscription? persistingSubscription;
+
+    protected override void OnInitialized()
+    {
+        if (ApplicationState.TryTakeFromJson<string>(nameof(ActiveTab), out var storedTab))
+        {
+            ActiveTab = storedTab ?? "login";
+        }
+
+        if (ApplicationState.TryTakeFromJson<string>(nameof(errorMessage), out var storedError))
+        {
+            errorMessage = storedError ?? string.Empty;
+        }
+
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+        {
+            var queryType = httpContext.Request.Query["type"].ToString();
+            if (queryType is "register" or "login")
+            {
+                ActiveTab = queryType;
+            }
+
+            var loginError = httpContext.Session.GetString("LoginError");
+            if (!string.IsNullOrEmpty(loginError))
+            {
+                errorMessage = loginError;
+                httpContext.Session.Remove("LoginError");
+                ActiveTab = "login";
+            }
+
+            // Проверка ошибки Регистрации
+            var registerError = httpContext.Session.GetString("RegisterError");
+            if (!string.IsNullOrEmpty(registerError))
+            {
+                errorMessage = registerError;
+                httpContext.Session.Remove("RegisterError");
+                ActiveTab = "register";
+            }
+        }
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistState);
+    }
+
+    private void SetActiveTab(string tab)
+    {
+        ActiveTab = tab;
+        errorMessage = null;
+        if (NavigationManager != null)
+        {
+            NavigationManager.NavigateTo($"/account/authorization?type={tab}", forceLoad: false, replace: true);
+        }
+    }
+
+    private Task PersistState()
+    {
+        ApplicationState.PersistAsJson(nameof(ActiveTab), ActiveTab);
+        ApplicationState.PersistAsJson(nameof(errorMessage), errorMessage);
+        return Task.CompletedTask;
+    }
+
+    public void Dispose() => persistingSubscription?.Dispose();
+
+}

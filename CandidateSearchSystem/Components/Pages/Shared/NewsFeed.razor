@@ -1,0 +1,137 @@
+﻿@using Microsoft.AspNetCore.WebUtilities
+@rendermode InteractiveServer
+@page "/news"
+
+<PageTitle>Все новости платформы</PageTitle>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 mb-0">🗞️ Все новости платформы</h1>
+    </div>
+
+    @if (IsLoading)
+    {
+        <p><em>Загрузка новостей...</em></p>
+    }
+    else if (NewsProvider is not null)
+    {
+        <div class="news-list-container">
+            <Virtualize Context="news" ItemsProvider="NewsProvider" ItemSize="250">
+                <article id="@($"news-item-{news.Id}")"
+                         class="news-card-large @(news.Id == NewsId ? "active-news" : "")">
+
+                    <div class="card-header-modern">
+                        <span class="badge @GetBadgeClass(news.Level) fw-semibold text-uppercase large-badge me-3">@news.Level</span>
+                        <h2 class="card-title-modern h5 fw-bold">№@news.Id </h2>
+                        <h2 class="card-title-modern h5 fw-bold">@news.Title</h2>
+
+                        <div class="card-meta-info text-muted">
+                            <small>@news.CreatedAt.ToString("dd.MM.yyyy")</small>
+                            <small class="ms-3">— @news.Author</small>
+                        </div>
+                    </div>
+
+                    <p class="card-text-modern text-dark mt-3 mb-3">@news.Text </p>
+
+                </article>
+            </Virtualize>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center" role="alert">
+            Пока что новых новостей нет.
+        </div>
+    }
+</div>
+
+
+@code {
+
+    [Parameter] public Guid? NewsId { get; set; } = null;
+    [Inject] IJSRuntime JSRuntime { get; set; } = default!;
+    [Inject] INewsService Service { get; set; } = default!;
+    [Inject] ILogger<NewsFeed> Logger { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+    private const int PageSize = 10;
+    private bool _scrollDone = false;
+    private bool IsLoading { get; set; } = true;
+    private ItemsProviderDelegate<NewsPostDto> NewsProvider { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var rawid))
+        {
+            if (Guid.TryParse(rawid, out var newsId))
+            {
+                NewsId = newsId;
+            }
+            else
+            {
+                NewsId = null;
+            }
+        }
+
+
+        // Инициализируем ItemsProvider нашим методом
+        NewsProvider = LoadNewsAsync;
+        IsLoading = false;
+    }
+
+    private async ValueTask<ItemsProviderResult<NewsPostDto>> LoadNewsAsync(ItemsProviderRequest request)
+    {
+        var result = await Service.GetNewsPageAsync(request.StartIndex, request.Count);
+        if (IsLoading) IsLoading = false;
+        return result.Match(
+            pagedResult => new ItemsProviderResult<NewsPostDto>(pagedResult.Items, pagedResult.TotalCount),
+            error =>
+            {
+                Logger.LogError("Ошибка при загрузке новостей: {Error}", error);
+                return new ItemsProviderResult<NewsPostDto>([], 0);
+            });
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_scrollDone && NewsId.HasValue)
+        {
+            _scrollDone = true;
+
+            // Получаем индекс новости в отсортированном списке
+            var resultPageIndex = await Service.GetNewsPageIndexAsync(NewsId.Value, PageSize);
+            if (!resultPageIndex.IsSuccess)
+                return;
+
+            // Вычисляем стартовый индекс для Virtualize
+            int startIndex = (resultPageIndex.Value - 1) * PageSize;
+
+            // Подгружаем элементы до нужного индекса
+            var preloaded = await Service.GetNewsPageAsync(1, startIndex + PageSize);
+
+            // Обновляем ItemsProvider с предзагрузкой
+            NewsProvider = async request =>
+            {
+                var page = await Service.GetNewsPageAsync(request.StartIndex + 1, request.Count);
+                return new ItemsProviderResult<NewsPostDto>(page.Value.Items, page.Value.TotalCount);
+            };
+
+            StateHasChanged(); // Обновляем Virtualize
+
+            // Ждём рендера нужного элемента
+            await Task.Delay(50);
+
+            await JSRuntime.InvokeVoidAsync("scrollToElement", $"news-item-{NewsId.Value}");
+        }
+    }
+
+    private string GetBadgeClass(NewsLevel level) => level switch
+    {
+        NewsLevel.HotFix => "bg-danger",
+        NewsLevel.Release => "bg-success",
+        NewsLevel.Update => "bg-info text-dark",
+        _ => "bg-secondary"
+    };
+}

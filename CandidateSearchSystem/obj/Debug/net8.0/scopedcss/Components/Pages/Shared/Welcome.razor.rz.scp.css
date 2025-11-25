@@ -1,0 +1,46 @@
+/* Minimal local styles that complement Bootstrap without using other frameworks */
+.lead[b-anxhgbjrp9] {
+    max-width: 55ch;
+}
+
+.gap-2[b-anxhgbjrp9] {
+    gap: .5rem;
+}
+
+/* Make hero svg responsive inside its column */
+svg[b-anxhgbjrp9] {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Slight elevation for cards */
+.border.rounded[b-anxhgbjrp9] {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.03);
+}
+
+/* Эффект свечения и интерактивности для всех карточек (назовем их card-glow) */
+.card-glow[b-anxhgbjrp9] {
+    border: 1px solid #e9ecef; /* Тонкая рамка для контраста с нижней линией */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    .card-glow:hover[b-anxhgbjrp9] {
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+        transform: translateY(-2px); /* Небольшой подъем при наведении */
+    }
+
+/* Измененный общий стиль для .border.rounded, чтобы обеспечить фон/тень */
+.border.rounded[b-anxhgbjrp9] {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.03);
+}
+
+/* Дополнительно: используем более темный текст, чем text-muted, для лучшей читаемости */
+.text-secondary[b-anxhgbjrp9] {
+    color: #495057 !important;
+}
+
+@media (max-width: 768px) {
+    .lead[b-anxhgbjrp9] {
+        max-width: none;
+    }
+}

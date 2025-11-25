@@ -1,0 +1,158 @@
+﻿@* /invitations	Invitations.razor	Просмотр истории отправленных приглашений/взаимодействий. *@
+@page "/invitations"
+@using CandidateSearchSystem.Data.Constants
+@using CandidateSearchSystem.Data.DTOs
+@using System.Collections.Generic
+@using System.Linq
+
+<h3>📬 История Приглашений</h3>
+
+<div class="container-fluid">
+    @if (Interactions.Any())
+    {
+        <p class="text-muted">Всего взаимодействий: <strong>@Interactions.Count()</strong></p>
+
+        @foreach (var interaction in Interactions)
+        {
+            <div class="@GetCardClass(interaction.Status) mb-3 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        Приглашение для <strong>@interaction.Candidate.FirstName @interaction.Candidate.LastName</strong>
+                    </h5>
+                    <span class="@GetStatusBadgeClass(interaction.Status)">@GetStatusText(interaction.Status)</span>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-3 small">
+                        <dt class="col-sm-3">Дата отправки:</dt>
+                        <dd class="col-sm-9">@interaction.SentDate.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")</dd>
+
+                        @if (interaction.CandidateResponseDate.HasValue)
+                        {
+                            <dt class="col-sm-3">Дата ответа:</dt>
+                            <dd class="col-sm-9 fw-bold">@interaction.CandidateResponseDate.Value.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")</dd>
+                        }
+                    </dl>
+
+                    <h6>Текст приглашения:</h6>
+                    <blockquote class="blockquote alert alert-light p-2 border-start border-4 border-secondary">
+                        <p class="mb-0 small">@(string.IsNullOrWhiteSpace(interaction.RecruiterInvitationBody) ? "Текст не был сохранен." : interaction.RecruiterInvitationBody)</p>
+                    </blockquote>
+
+                    @if (interaction.CandidateAction != CandidateAction.None)
+                    {
+                        <h6>Действие кандидата:</h6>
+                        <div class="alert @GetCandidateActionClass(interaction.CandidateAction) p-2 small">
+                            <strong>@interaction.CandidateAction</strong>: @interaction.CandidateActionReason
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">
+            У вас пока нет записанных взаимодействий.
+        </div>
+    }
+</div>
+
+@code {
+    // ====================================================================
+    // ДАННЫЕ
+    // ====================================================================
+    private List<RecruiterInteractionDto> Interactions { get; set; } = new List<RecruiterInteractionDto>();
+    private UserSummaryDto CurrentRecruiter = new UserSummaryDto { FirstName = "Елена", LastName = "HR", UserId = Guid.NewGuid() };
+
+    protected override void OnInitialized()
+    {
+        Interactions = new List<RecruiterInteractionDto>
+        {
+            // 1. Принято
+            new RecruiterInteractionDto
+            {
+                Id = Guid.NewGuid(),
+                Recruiter = CurrentRecruiter,
+                Candidate = new UserSummaryDto { FirstName = "Иван", LastName = "Петров" },
+                Status = InteractionStatus.Accepted,
+                SentDate = DateTimeOffset.UtcNow.AddDays(-10),
+                CandidateResponseDate = DateTimeOffset.UtcNow.AddDays(-8),
+                CandidateAction = CandidateAction.Accept,
+                CandidateActionReason = "Предложение очень интересно, готов обсудить детали в Zoom.",
+                RecruiterInvitationBody = "Здравствуйте, Иван! У нас есть вакансия Senior C# Developer..."
+            },
+            // 2. Отклонено
+            new RecruiterInteractionDto
+            {
+                Id = Guid.NewGuid(),
+                Recruiter = CurrentRecruiter,
+                Candidate = new UserSummaryDto { FirstName = "Мария", LastName = "Сидорова" },
+                Status = InteractionStatus.Declined,
+                SentDate = DateTimeOffset.UtcNow.AddDays(-5),
+                CandidateResponseDate = DateTimeOffset.UtcNow.AddDays(-4),
+                CandidateAction = CandidateAction.Decline,
+                CandidateActionReason = "Спасибо за предложение, но я уже приняла оффер в другой компании.",
+                RecruiterInvitationBody = "Мария, добрый день! Рады предложить вам позицию Project Manager..."
+            },
+            // 3. Отправлено (Нет ответа)
+            new RecruiterInteractionDto
+            {
+                Id = Guid.NewGuid(),
+                Recruiter = CurrentRecruiter,
+                Candidate = new UserSummaryDto { FirstName = "Сергей", LastName = "Козлов" },
+                Status = InteractionStatus.Sent,
+                SentDate = DateTimeOffset.UtcNow.AddDays(-2),
+                CandidateResponseDate = null,
+                CandidateAction = CandidateAction.None,
+                CandidateActionReason = null,
+                RecruiterInvitationBody = "Сергей, мы обратили внимание на ваш профиль Junior QA..."
+            },
+        };
+    }
+
+    // ====================================================================
+    // СТИЛИЗАЦИЯ (ОБНОВЛЕНО ПОД ENUM)
+    // ====================================================================
+
+    private string GetCardClass(InteractionStatus status) => status switch
+    {
+        InteractionStatus.Accepted or InteractionStatus.Hired => "card border-success",
+        InteractionStatus.Declined or InteractionStatus.Rejected => "card border-danger",
+        InteractionStatus.Sent or InteractionStatus.Viewed or InteractionStatus.InterviewScheduled => "card border-secondary",
+        InteractionStatus.OfferSent => "card border-warning",
+        _ => "card border-light"
+    };
+
+    private string GetStatusBadgeClass(InteractionStatus status) => status switch
+    {
+        InteractionStatus.Accepted or InteractionStatus.Hired => "badge bg-success",
+        InteractionStatus.Declined or InteractionStatus.Rejected => "badge bg-danger",
+        InteractionStatus.Sent => "badge bg-primary",
+        InteractionStatus.Viewed => "badge bg-info text-dark",
+        InteractionStatus.InterviewScheduled => "badge bg-warning text-dark",
+        InteractionStatus.OfferSent => "badge bg-warning text-dark",
+        _ => "badge bg-secondary"
+    };
+
+    private string GetStatusText(InteractionStatus status) => status switch
+    {
+        InteractionStatus.Draft => "ЧЕРНОВИК",
+        InteractionStatus.Sent => "ОТПРАВЛЕНО",
+        InteractionStatus.Viewed => "ПРОСМОТРЕНО",
+        InteractionStatus.Accepted => "ПРИНЯТО",
+        InteractionStatus.Declined => "ОТКЛОНЕНО",
+        InteractionStatus.InterviewScheduled => "ИНТЕРВЬЮ",
+        InteractionStatus.OfferSent => "ОФФЕР ОТПРАВЛЕН",
+        InteractionStatus.Hired => "НАНЯТ",
+        InteractionStatus.Rejected => "ОТКАЗ",
+        _ => status.ToString().ToUpper()
+    };
+
+    private string GetCandidateActionClass(CandidateAction action) => action switch
+    {
+        CandidateAction.Accept => "alert-success",
+        CandidateAction.Decline => "alert-danger",
+        CandidateAction.AskDetails => "alert-warning",
+        _ => "alert-secondary"
+    };
+}

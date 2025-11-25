@@ -1,0 +1,252 @@
+﻿@* /search	Search.razor	Основной инструмент поиска кандидатов. *@
+@page "/search"
+@attribute [Authorize]
+
+<h3>🔍 Поиск Кандидатов</h3>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Фильтры поиска
+                </div>
+                <div class="card-body">
+                    <EditForm Model="@SearchModel" OnSubmit="@HandleSearch">
+
+                        <div class="form-group mb-3">
+                            <label for="jobTitle" class="form-label small fw-bold">Желаемая должность</label>
+                            <InputText id="jobTitle" @bind-Value="SearchModel.DesiredJobTitle" class="form-control form-control-sm" placeholder="e.g. Senior C# Developer" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="city" class="form-label small fw-bold">Город</label>
+                            <InputText id="city" @bind-Value="SearchModel.City" class="form-control form-control-sm" placeholder="e.g. Москва" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="minExp" class="form-label small fw-bold">Опыт (от, лет)</label>
+                            <InputNumber id="minExp" @bind-Value="SearchModel.MinExperienceYears" class="form-control form-control-sm" />
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <label for="minSalary" class="form-label small fw-bold">Зарплата (от)</label>
+                                <InputNumber id="minSalary" @bind-Value="SearchModel.MinDesiredSalary" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-4">
+                                <label for="currency" class="form-label small fw-bold">Валюта</label>
+                                <InputText id="currency" @bind-Value="SearchModel.SalaryCurrency" class="form-control form-control-sm" />
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <InputCheckbox id="isLooking" @bind-Value="SearchModel.IsActivelyLooking" class="form-check-input" />
+                            <label class="form-check-label small" for="isLooking">
+                                Активно ищет работу
+                            </label>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="workModel" class="form-label small fw-bold">Модель работы</label>
+                            <InputSelect id="workModel" @bind-Value="SearchModel.WorkModel" class="form-select form-select-sm">
+                                <option value="">Любая</option>
+                                <option value="Remote">Удаленно</option>
+                                <option value="Office">В офисе</option>
+                                <option value="Hybrid">Гибрид</option>
+                            </InputSelect>
+                        </div>
+
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Искать</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h4 class="mb-4">Найдено **@FilteredCandidates.Count** кандидатов</h4>
+
+            @if (FilteredCandidates.Any())
+            {
+                <div class="row row-cols-1 g-3">
+                    @foreach (var candidate in FilteredCandidates)
+                    {
+                        <div class="col">
+                            <div class="card shadow-sm h-100 @(candidate.IsActivelyLooking ? "border-success" : "border-light")">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="card-title text-primary mb-1">
+                                                @candidate.FirstName @candidate.LastName
+                                                <small class="badge bg-secondary ms-2">@candidate.TotalYearsOfExperience лет опыта</small>
+                                            </h5>
+                                            <h6 class="card-subtitle mb-2 text-muted">@candidate.DesiredJobTitle</h6>
+                                        </div>
+                                        <div class="text-end">
+                                            @if (candidate.IsActivelyLooking)
+                                            {
+                                                <span class="badge bg-success mb-2">Активный поиск</span>
+                                            }
+                                            <p class="mb-0 small text-muted">Обновлено: @candidate.LastActivity.ToLocalTime().ToString("dd.MM.yyyy")</p>
+                                        </div>
+                                    </div>
+
+                                    <hr />
+
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-sm-4">Желаемая ЗП:</dt>
+                                        <dd class="col-sm-8 fw-bold">@candidate.DesiredSalary.ToString("N0") @candidate.SalaryCurrency</dd>
+
+                                        <dt class="col-sm-4">Город:</dt>
+                                        <dd class="col-sm-8">@candidate.City</dd>
+                                    </dl>
+
+                                    <div class="d-flex justify-content-end mt-3">
+                                        <button class="btn btn-sm btn-outline-info me-2">Отправить приглашение</button>
+                                        <button class="btn btn-sm btn-outline-warning">Добавить в избранное</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    По вашему запросу кандидаты не найдены. Попробуйте изменить фильтры.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    // ====================================================================
+    // MOCK-ОБЪЕКТЫ (ИМИТАЦИЯ DTO)
+    // ====================================================================
+
+    // DTO для формы поиска
+    public class SearchCandidateDto
+    {
+        public string? DesiredJobTitle { get; set; } = string.Empty;
+        public string? City { get; set; } = string.Empty;
+        public int MinExperienceYears { get; set; } = 0;
+        public decimal? MinDesiredSalary { get; set; }
+        public string? SalaryCurrency { get; set; } = "USD";
+        public bool IsActivelyLooking { get; set; } = false;
+        public string? WorkModel { get; set; } = string.Empty;
+    }
+
+    // DTO для краткого отображения кандидата
+    public class CandidateProfileSummaryDto
+    {
+        public Guid UserId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string? LastName { get; set; }
+        public string DesiredJobTitle { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+        public decimal DesiredSalary { get; set; }
+        public string SalaryCurrency { get; set; } = "USD";
+        public int TotalYearsOfExperience { get; set; }
+        public bool IsActivelyLooking { get; set; }
+        public DateTimeOffset LastActivity { get; set; }
+        public string WorkModel { get; set; } = "Office";
+    }
+
+    // ====================================================================
+    // ЛОГИКА КОМПОНЕНТА
+    // ====================================================================
+
+    private SearchCandidateDto SearchModel = new SearchCandidateDto();
+    private List<CandidateProfileSummaryDto> AllCandidates = GetMockCandidates();
+    private List<CandidateProfileSummaryDto> FilteredCandidates = new List<CandidateProfileSummaryDto>();
+
+    protected override void OnInitialized()
+    {
+        // Имитация первого поиска при загрузке страницы
+        HandleSearch(new EditContext(SearchModel));
+    }
+
+    private void HandleSearch(EditContext editContext)
+    {
+        // В реальном приложении здесь будет вызов API с параметрами SearchModel
+
+        // --- ИМИТАЦИЯ ФИЛЬТРАЦИИ ---
+        var query = AllCandidates.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(SearchModel.DesiredJobTitle))
+        {
+            query = query.Where(c => c.DesiredJobTitle.Contains(SearchModel.DesiredJobTitle, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (!string.IsNullOrWhiteSpace(SearchModel.City))
+        {
+            query = query.Where(c => c.City.Contains(SearchModel.City, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (SearchModel.MinExperienceYears > 0)
+        {
+            query = query.Where(c => c.TotalYearsOfExperience >= SearchModel.MinExperienceYears);
+        }
+
+        if (SearchModel.MinDesiredSalary.HasValue)
+        {
+            // Упрощенная фильтрация по ЗП без учета валюты для мок-объектов
+            query = query.Where(c => c.DesiredSalary >= SearchModel.MinDesiredSalary.Value &&
+                                     c.SalaryCurrency.Equals(SearchModel.SalaryCurrency, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (SearchModel.IsActivelyLooking)
+        {
+            query = query.Where(c => c.IsActivelyLooking);
+        }
+
+        if (!string.IsNullOrWhiteSpace(SearchModel.WorkModel))
+        {
+            query = query.Where(c => c.WorkModel.Equals(SearchModel.WorkModel, StringComparison.OrdinalIgnoreCase));
+        }
+
+        FilteredCandidates = query.ToList();
+    }
+
+    // --- МОК-ДАННЫЕ ---
+    private static List<CandidateProfileSummaryDto> GetMockCandidates()
+    {
+        return new List<CandidateProfileSummaryDto>
+        {
+            new CandidateProfileSummaryDto
+            {
+                UserId = Guid.NewGuid(), FirstName = "Олег", LastName = "Крутов",
+                DesiredJobTitle = "Senior C# Developer", City = "Москва",
+                DesiredSalary = 4500, SalaryCurrency = "USD", TotalYearsOfExperience = 8,
+                IsActivelyLooking = true, LastActivity = DateTimeOffset.UtcNow.AddHours(-1), WorkModel = "Remote"
+            },
+            new CandidateProfileSummaryDto
+            {
+                UserId = Guid.NewGuid(), FirstName = "Инна", LastName = "Волкова",
+                DesiredJobTitle = "Middle Frontend Developer", City = "Санкт-Петербург",
+                DesiredSalary = 200000, SalaryCurrency = "RUB", TotalYearsOfExperience = 4,
+                IsActivelyLooking = true, LastActivity = DateTimeOffset.UtcNow.AddDays(-2), WorkModel = "Hybrid"
+            },
+            new CandidateProfileSummaryDto
+            {
+                UserId = Guid.NewGuid(), FirstName = "Павел", LastName = "Смирнов",
+                DesiredJobTitle = "Senior C# Developer", City = "Екатеринбург",
+                DesiredSalary = 3500, SalaryCurrency = "USD", TotalYearsOfExperience = 6,
+                IsActivelyLooking = false, LastActivity = DateTimeOffset.UtcNow.AddDays(-10), WorkModel = "Office"
+            },
+            new CandidateProfileSummaryDto
+            {
+                UserId = Guid.NewGuid(), FirstName = "Мария", LastName = "Иванова",
+                DesiredJobTitle = "Project Manager", City = "Москва",
+                DesiredSalary = 250000, SalaryCurrency = "RUB", TotalYearsOfExperience = 5,
+                IsActivelyLooking = true, LastActivity = DateTimeOffset.UtcNow.AddHours(-5), WorkModel = "Remote"
+            }
+        };
+    }
+}

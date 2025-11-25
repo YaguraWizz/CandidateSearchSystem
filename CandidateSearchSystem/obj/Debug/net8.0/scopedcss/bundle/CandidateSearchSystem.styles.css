@@ -1,0 +1,321 @@
+/* _content/CandidateSearchSystem/Components/Layout/MainLayout.razor.rz.scp.css */
+.page[b-90eld9r5gw] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main[b-90eld9r5gw] {
+    flex: 1;
+}
+
+.sidebar[b-90eld9r5gw] {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+.top-row[b-90eld9r5gw] {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #d6d5d5;
+    justify-content: flex-end;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+    .top-row[b-90eld9r5gw]  a, .top-row[b-90eld9r5gw]  .btn-link {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+        text-decoration: none;
+    }
+
+        .top-row[b-90eld9r5gw]  a:hover, .top-row[b-90eld9r5gw]  .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .top-row[b-90eld9r5gw]  a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+@media (max-width: 640.98px) {
+    .top-row[b-90eld9r5gw] {
+        justify-content: space-between;
+    }
+
+        .top-row[b-90eld9r5gw]  a, .top-row[b-90eld9r5gw]  .btn-link {
+            margin-left: 0;
+        }
+}
+
+@media (min-width: 641px) {
+    .page[b-90eld9r5gw] {
+        flex-direction: row;
+    }
+
+    .sidebar[b-90eld9r5gw] {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .top-row[b-90eld9r5gw] {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+        .top-row.auth[b-90eld9r5gw]  a:first-child {
+            flex: 1;
+            text-align: right;
+            width: 0;
+        }
+
+    .top-row[b-90eld9r5gw], article[b-90eld9r5gw] {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+#blazor-error-ui[b-90eld9r5gw] {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss[b-90eld9r5gw] {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+/* _content/CandidateSearchSystem/Components/Layout/NavMenu.razor.rz.scp.css */
+.navbar-toggler[b-l8mtwbimi0] {
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    color: white;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+}
+
+    .navbar-toggler:checked[b-l8mtwbimi0] {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
+.top-row[b-l8mtwbimi0] {
+    height: 3.5rem;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.navbar-brand[b-l8mtwbimi0] {
+    font-size: 1.1rem;
+}
+
+/* 🎨 ИЗМЕНЕНИЯ: Увеличение размера иконки */
+.bi[b-l8mtwbimi0] {
+    display: inline-block;
+    position: relative;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-right: 0.1rem;
+    /* top: -1px; - Удалено, для лучшего Flexbox выравнивания */
+    background-size: cover;
+}
+
+.nav-item[b-l8mtwbimi0] {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type[b-l8mtwbimi0] {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type[b-l8mtwbimi0] {
+        padding-bottom: 1rem;
+    }
+
+    /* 🎨 ИЗМЕНЕНИЯ: Удаление line-height для лучшего центрирования Flexbox */
+    .nav-item[b-l8mtwbimi0]  .nav-link {
+        color: #d7d7d7;
+        background: none;
+        border: none;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        /* line-height: 3rem; - УДАЛЕНО */
+        width: 100%;
+        white-space: nowrap;
+    }
+
+    .nav-item[b-l8mtwbimi0]  a.active {
+        background-color: rgba(255,255,255,0.37);
+        color: white;
+    }
+
+    .nav-item[b-l8mtwbimi0]  .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+.nav-scrollable[b-l8mtwbimi0] {
+    display: none;
+}
+
+.navbar-toggler:checked ~ .nav-scrollable[b-l8mtwbimi0] {
+    display: block;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler[b-l8mtwbimi0] {
+        display: none;
+    }
+
+    .nav-scrollable[b-l8mtwbimi0] {
+        display: block;
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}
+
+.logout-form[b-l8mtwbimi0] {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+    .logout-form .btn-link[b-l8mtwbimi0] {
+        color: white;
+        text-align: left;
+        text-decoration: none;
+        background-color: transparent;
+        border: none;
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+        .logout-form .btn-link:hover[b-l8mtwbimi0],
+        .logout-form .btn-link:focus[b-l8mtwbimi0] {
+            color: #ffc107;
+            background-color: rgba(255, 99, 71, 0.2);
+            border-radius: 0.3rem;
+            text-decoration: none;
+        }
+
+/* _content/CandidateSearchSystem/Components/Pages/Shared/NewsFeed.razor.rz.scp.css */
+/* Стиль для более крупной, неинтерактивной карточки новости */
+.news-card-large[b-vv7l0xjmmo] {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: box-shadow 0.2s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
+    height: 250px;
+}
+
+    .news-card-large:hover[b-vv7l0xjmmo] {
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    }
+
+.large-badge[b-vv7l0xjmmo] {
+    font-size: 0.85rem !important; /* Увеличиваем шрифт бейджа */
+    padding: .4em .7em;
+}
+
+.card-header-modern[b-vv7l0xjmmo] {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Увеличиваем расстояние между элементами */
+    margin-bottom: 15px;
+    flex-wrap: wrap; /* Позволяет элементам переноситься на меньших экранах */
+}
+
+.card-title-modern[b-vv7l0xjmmo] {
+    flex-grow: 1;
+    margin-bottom: 0;
+    color: #212529; /* Темный заголовок */
+    font-size: 1.3em; /* Увеличиваем размер заголовка */
+}
+
+.card-meta-info[b-vv7l0xjmmo] {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.card-text-modern[b-vv7l0xjmmo] {
+    color: #343a40; /* Более темный текст для лучшей читаемости */
+    line-height: 1.6; /* Увеличиваем межстрочный интервал */
+    font-size: 1.05em; /* Увеличиваем основной текст */
+}
+
+/* Стиль для выделения активной/проскролленной новости */
+.active-news[b-vv7l0xjmmo] {
+    border: 2px solid var(--bs-primary);
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+}
+/* _content/CandidateSearchSystem/Components/Pages/Shared/Welcome.razor.rz.scp.css */
+/* Minimal local styles that complement Bootstrap without using other frameworks */
+.lead[b-anxhgbjrp9] {
+    max-width: 55ch;
+}
+
+.gap-2[b-anxhgbjrp9] {
+    gap: .5rem;
+}
+
+/* Make hero svg responsive inside its column */
+svg[b-anxhgbjrp9] {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Slight elevation for cards */
+.border.rounded[b-anxhgbjrp9] {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.03);
+}
+
+/* Эффект свечения и интерактивности для всех карточек (назовем их card-glow) */
+.card-glow[b-anxhgbjrp9] {
+    border: 1px solid #e9ecef; /* Тонкая рамка для контраста с нижней линией */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    .card-glow:hover[b-anxhgbjrp9] {
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+        transform: translateY(-2px); /* Небольшой подъем при наведении */
+    }
+
+/* Измененный общий стиль для .border.rounded, чтобы обеспечить фон/тень */
+.border.rounded[b-anxhgbjrp9] {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.03);
+}
+
+/* Дополнительно: используем более темный текст, чем text-muted, для лучшей читаемости */
+.text-secondary[b-anxhgbjrp9] {
+    color: #495057 !important;
+}
+
+@media (max-width: 768px) {
+    .lead[b-anxhgbjrp9] {
+        max-width: none;
+    }
+}

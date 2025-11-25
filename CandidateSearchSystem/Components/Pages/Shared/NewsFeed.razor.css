@@ -1,0 +1,54 @@
+﻿/* Стиль для более крупной, неинтерактивной карточки новости */
+.news-card-large {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+    transition: box-shadow 0.2s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
+    height: 250px;
+}
+
+    .news-card-large:hover {
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    }
+
+.large-badge {
+    font-size: 0.85rem !important; /* Увеличиваем шрифт бейджа */
+    padding: .4em .7em;
+}
+
+.card-header-modern {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Увеличиваем расстояние между элементами */
+    margin-bottom: 15px;
+    flex-wrap: wrap; /* Позволяет элементам переноситься на меньших экранах */
+}
+
+.card-title-modern {
+    flex-grow: 1;
+    margin-bottom: 0;
+    color: #212529; /* Темный заголовок */
+    font-size: 1.3em; /* Увеличиваем размер заголовка */
+}
+
+.card-meta-info {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.card-text-modern {
+    color: #343a40; /* Более темный текст для лучшей читаемости */
+    line-height: 1.6; /* Увеличиваем межстрочный интервал */
+    font-size: 1.05em; /* Увеличиваем основной текст */
+}
+
+/* Стиль для выделения активной/проскролленной новости */
+.active-news {
+    border: 2px solid var(--bs-primary);
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+}

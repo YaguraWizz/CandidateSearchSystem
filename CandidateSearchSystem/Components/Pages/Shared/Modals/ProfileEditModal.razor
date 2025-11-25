@@ -1,0 +1,561 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@if (IsVisible)
+{
+    @* Подложка (Backdrop) - затемняет фон *@
+    <div class="modal-backdrop-blazor" @onclick="CloseModal"></div>
+
+    @* Само Модальное Окно *@
+    <div class="modal-content-blazor">
+        
+        <div class="modal-header">
+            <h5 class="modal-title">Редактирование Профиля</h5>
+            <button type="button" class="btn-close" @onclick="CloseModal" aria-label="Close"></button>
+        </div>
+
+        @* Используем табы для разделения секций *@
+        <div class="modal-body">
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="@GetTabClass(Tab.Info)" @onclick="() => SetActiveTab(Tab.Info)">Общая Информация</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="@GetTabClass(Tab.Contacts)" @onclick="() => SetActiveTab(Tab.Contacts)">Контакты</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="@GetTabClass(Tab.Password)" @onclick="() => SetActiveTab(Tab.Password)">Смена Пароля</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                
+                @* 1. Вкладка Общая Информация *@
+                @if (ActiveTab == Tab.Info && EditModel is not null)
+                {
+                    <EditForm Model="@EditModel" OnValidSubmit="HandleProfileUpdate" class="row g-3">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="alert alert-danger" />
+                        
+                        @* ... (Разметка формы Общей Информации с InputText и InputDate) ... *@
+                        <div class="col-md-4"><label for="firstName" class="form-label">Имя</label><InputText id="firstName" @bind-Value="EditModel.FirstName" class="form-control" /><ValidationMessage For="@(() => EditModel.FirstName)" /></div>
+                        <div class="col-md-4"><label for="lastName" class="form-label">Фамилия</label><InputText id="lastName" @bind-Value="EditModel.LastName" class="form-control" /><ValidationMessage For="@(() => EditModel.LastName)" /></div>
+                        <div class="col-md-4"><label for="patronymic" class="form-label">Отчество</label><InputText id="patronymic" @bind-Value="EditModel.Patronymic" class="form-control" /></div>
+                        <div class="col-md-6"><label for="dateOfBirth" class="form-label">Дата Рождения</label><InputDate @bind-Value="EditModel.DateOfBirth" id="dateOfBirth" class="form-control" /><ValidationMessage For="@(() => EditModel.DateOfBirth)" /></div>
+                        <div class="col-12"><label for="description" class="form-label">О себе</label><InputTextArea id="description" @bind-Value="EditModel.Description" class="form-control" rows="4" /></div>
+
+                        <div class="col-12 mt-4 text-end">
+                            <button type="submit" class="btn btn-success me-2" disabled="@Loading">Сохранить</button>
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Отмена</button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(ErrorMessage)) { <div class="col-12"><div class="alert alert-danger mt-3">@ErrorMessage</div></div> }
+                        @if (InfoUpdateSuccess) { <div class="col-12"><div class="alert alert-success mt-3">Информация успешно обновлена!</div></div> }
+                    </EditForm>
+                }
+
+                @* 2. Вкладка Контакты *@
+                @if (ActiveTab == Tab.Contacts)
+                {
+                    <EditForm Model="@ContactModel" OnValidSubmit="HandleAddOrUpdateContact">
+                        <DataAnnotationsValidator />
+
+                        @* 🔥 Форма добавления/редактирования в одну строку 🔥 *@
+                        <div class="d-flex align-items-end mb-4 gap-2">
+
+                            @* 1. Селектор Типа *@
+                            <div style="flex-basis: 25%;">
+                                <label class="form-label small mb-1">Тип</label>
+                                <InputSelect @bind-Value="ContactModel.Type" class="form-select form-select-sm">
+                                    @foreach (var type in Enum.GetValues<ContactType>())
+                                    {
+                                        <option value="@type">@type.ToString()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => ContactModel.Type)" class="text-danger small" />
+                            </div>
+
+                            @* 2. Поле Значения *@
+                            <div style="flex-grow: 1;">
+                                <label class="form-label small mb-1">Значение</label>
+                                <InputText @bind-Value="ContactModel.Value" class="form-control form-control-sm" placeholder="Введите email, номер и т.д." />
+                                <ValidationMessage For="@(() => ContactModel.Value)" class="text-danger small" />
+                            </div>
+
+                            @* 3. Кнопка *@
+                            <div style="flex-basis: 15%;">
+                                <button type="submit" class="btn btn-primary btn-sm w-100" disabled="@Loading">
+                                    @if (Loading)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                                    }
+                                    @(EditingContactId.HasValue ? "Сохранить" : "Добавить")
+                                </button>
+                            </div>
+
+                            @* 4. Кнопка отмены редактирования *@
+                            @if (EditingContactId.HasValue)
+                            {
+                                <div style="flex-basis: 15%;">
+                                    <button type="button" class="btn btn-secondary btn-sm w-100" @onclick="() => { EditingContactId = null; ContactModel = new(); }">
+                                        Отмена
+                                    </button>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(ContactError))
+                        {
+                            <div class="alert alert-danger mt-2">@ContactError</div>
+                        }
+                    </EditForm>
+
+                    <hr />
+
+                    @* 🔥 Таблица существующих контактов с прокруткой 🔥 *@
+                    <h5>Существующие Контакты (@CurrentContacts.Count)</h5>
+                    <div style="max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 0.25rem;">
+                        <table class="table table-striped table-hover table-sm mb-0">
+                            <thead class="sticky-top bg-light">
+                                <tr>
+                                    <th style="width: 30%">Тип</th>
+                                    <th>Значение</th>
+                                    <th style="width: 10%">Удалить</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (CurrentContacts.Count != 0)
+                                {
+                                    @foreach (var contact in CurrentContacts.OrderByDescending(c => c.IsPrimary))
+                                    {
+                                        <tr class="@(contact.Id == EditingContactId ? "table-warning" : "")" style="cursor: pointer;" @onclick="() => SetContactForEdit(contact)">
+                                            <td>
+                                                <i class="@GetContactIcon(contact.Type) me-2"></i>
+                                                @contact.Type.ToString()
+                                            </td>
+                                            <td>@contact.Value</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-danger p-0 px-1"
+                                                        @onclick:preventDefault
+                                                        @onclick="() => HandleDeleteContact(contact.Id)"
+                                                        disabled="@Loading"
+                                                        title="Удалить контакт">
+                                                    <span class="bi bi-x-lg"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">Контакты отсутствуют.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                @* 3. Вкладка Смена Пароля *@
+                @if (ActiveTab == Tab.Password && PasswordModel is not null)
+                {
+                    @* ... (Разметка формы Смены Пароля) ... *@
+                    <EditForm Model="@PasswordModel" OnValidSubmit="HandlePasswordChange">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="alert alert-danger" />
+                        
+                        <div class="mb-3"><label for="currentPassword" class="form-label">Текущий Пароль</label><InputText type="password" id="currentPassword" @bind-Value="PasswordModel.CurrentPassword" class="form-control" /><ValidationMessage For="@(() => PasswordModel.CurrentPassword)" /></div>
+                        <div class="mb-3"><label for="newPassword" class="form-label">Новый Пароль</label><InputText type="password" id="newPassword" @bind-Value="PasswordModel.NewPassword" class="form-control" /><ValidationMessage For="@(() => PasswordModel.NewPassword)" /></div>
+                        <div class="mb-3"><label for="confirmPassword" class="form-label">Подтвердите Новый Пароль</label><InputText type="password" id="confirmPassword" @bind-Value="PasswordModel.ConfirmPassword" class="form-control" /><ValidationMessage For="@(() => PasswordModel.ConfirmPassword)" /></div>
+
+                        <div class="mt-4 text-end">
+                            <button type="submit" class="btn btn-warning me-2" disabled="@Loading">Сменить Пароль</button>
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Отмена</button>
+                        </div>
+                        @if (!string.IsNullOrEmpty(PasswordError)) { <div class="alert alert-danger mt-3">@PasswordError</div> }
+                        @if (PasswordChangeSuccess) { <div class="alert alert-success mt-3">Пароль успешно изменен!</div> }
+                    </EditForm>
+                }
+
+            </div>
+        </div>
+
+    </div>
+}
+
+
+
+<style>
+    /* Подложка */
+    .modal-backdrop-blazor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1040; /* Высокий z-index, как у Bootstrap */
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        opacity: 0.5; /* Затемнение */
+    }
+
+    /* Контейнер модального окна */
+    .modal-content-blazor {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Центрирование */
+        z-index: 1050; /* Еще выше, чем подложка */
+
+        background-color: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 0.3rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+        width: 90%; /* Адаптивная ширина */
+        max-width: 800px; /* Максимальная ширина */
+        max-height: 90vh;
+        overflow-y: auto; /* Скролл, если контент не помещается */
+    }
+
+    /* Используем стили Bootstrap для header/body/footer, если они у вас есть */
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+</style>
+
+
+
+@code {
+    // Необходимые инжекты и параметры (должны быть в обоих компонентах)
+    [Inject] private IAccountService AccountService { get; set; } = default!;
+    [Inject] private ILogger<ProfileEditModal> Logger { get; set; } = default!;
+    [Inject] private IContactService ContactService { get; set; } = default!;
+    [Parameter] public EventCallback<ApplicationUserDto> OnProfileUpdated { get; set; }
+
+    private bool IsVisible { get; set; } = false;
+    private enum Tab { Info, Contacts, Password }
+    private Tab ActiveTab = Tab.Info;
+
+    // Состояния компонента
+    private bool Loading { get; set; }
+    private string ErrorMessage { get; set; } = string.Empty;
+    private bool InfoUpdateSuccess { get; set; } = false;
+
+    private string PasswordError { get; set; } = string.Empty;
+    private bool PasswordChangeSuccess { get; set; } = false;
+
+    private ApplicationUserEditDto? EditModel { get; set; }
+    private ChangePasswordDto? PasswordModel { get; set; }
+    private Guid? CurrentUserId { get; set; }
+
+
+    private List<ContactDto> CurrentContacts { get; set; } = new List<ContactDto>();
+    private NewContactDto ContactModel { get; set; } = new(); // Модель для добавления/редактирования
+    private Guid? EditingContactId { get; set; } // ID контакта, который сейчас редактируется (null = новый)
+    private string ContactError { get; set; } = string.Empty;
+
+    // 🔥 DTO для формы добавления/редактирования (минимальные поля)
+    public class NewContactDto
+    {
+        [Required(ErrorMessage = "Тип контакта обязателен.")]
+        public ContactType Type { get; set; } = ContactType.Email;
+
+        [Required(ErrorMessage = "Значение обязательно.")]
+        [StringLength(100, ErrorMessage = "Значение не может превышать 100 символов.")]
+        public string? Value { get; set; }
+    }
+
+    // 🔥 DTO для отправки в API при создании (включает UserId)
+    public class CreateContactDto
+    {
+        public Guid UserId { get; set; }
+        [Required] public ContactType Type { get; set; }
+        [Required] public string Value { get; set; } = string.Empty;
+    }
+
+
+    // Публичный метод для открытия модального окна из Profile.razor
+    public void ShowModal(ApplicationUserDto? user, List<ContactDto> contacts)
+    {
+        if (user is null)
+        {
+            Logger.LogWarning("Попытка открыть модальное окно без данных пользователя.");
+            return;
+        }
+        CurrentContacts = contacts;
+        CurrentUserId = user.Id;
+
+        // 1. Инициализация EditModel из текущего пользователя
+        EditModel = new ApplicationUserEditDto
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Patronymic = user.Patronymic,
+            Description = user.Description,
+            DateOfBirth = user.DateOfBirth.Date,
+            PreferredLanguage = user.PreferredLanguage
+        };
+
+        // 2. Инициализация PasswordModel
+        PasswordModel = new ChangePasswordDto();
+
+        // 3. Сброс сообщений об успехе/ошибке
+        ErrorMessage = string.Empty;
+        InfoUpdateSuccess = false;
+        PasswordError = string.Empty;
+        PasswordChangeSuccess = false;
+
+        // 4. Открытие модального окна через JavaScript
+        ActiveTab = Tab.Info;
+        IsVisible = true;
+        StateHasChanged();
+    }
+    private void CloseModal()
+    {
+        IsVisible = false;
+        StateHasChanged();
+    }
+    private void SetActiveTab(Tab tab)
+    {
+        ActiveTab = tab;
+    }
+    private string GetTabClass(Tab tab) => ActiveTab == tab ? "nav-link active" : "nav-link";
+
+    // --- Обработчики Отправки Форм ---
+
+    private async Task HandleProfileUpdate()
+    {
+        if (CurrentUserId is null || EditModel is null) return;
+
+        Loading = true;
+        ErrorMessage = string.Empty;
+        InfoUpdateSuccess = false;
+
+        try
+        {
+            // Используйте DTO, подходящий для вашего API
+            var updateDto = new ApplicationUserEditDto
+            {
+                FirstName = EditModel.FirstName,
+                LastName = EditModel.LastName,
+                Patronymic = EditModel.Patronymic,
+                Description = EditModel.Description,
+                DateOfBirth = EditModel.DateOfBirth,
+                PreferredLanguage = EditModel.PreferredLanguage
+            };
+
+            var result = await AccountService.UpdateAsync(CurrentUserId.Value, updateDto);
+
+            if (result.IsSuccess)
+            {
+                // Оповещаем родительский компонент Profile.razor об обновлении
+                await OnProfileUpdated.InvokeAsync(result.Value);
+                InfoUpdateSuccess = true;
+                // Не закрываем сразу, чтобы пользователь увидел сообщение об успехе
+            }
+            else
+            {
+                ErrorMessage = $"Не удалось обновить профиль: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Исключение при обновлении профиля.");
+            ErrorMessage = $"Непредвиденная ошибка: {ex.Message}";
+        }
+        finally
+        {
+            Loading = false;
+            CloseModal();
+        }
+    }
+    private async Task HandlePasswordChange()
+    {
+        if (CurrentUserId is null || PasswordModel is null) return;
+
+        Loading = true;
+        PasswordError = string.Empty;
+        PasswordChangeSuccess = false;
+
+        try
+        {
+            // Предполагается, что ваш AccountService имеет метод ChangePasswordAsync
+            var result = await AccountService.ChangePasswordAsync(CurrentUserId.Value, PasswordModel);
+
+            if (result.IsSuccess)
+            {
+                PasswordChangeSuccess = true;
+                // Очистка полей после успешной смены
+                PasswordModel = new ChangePasswordDto();
+            }
+            else
+            {
+                PasswordError = $"Не удалось сменить пароль: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Исключение при смене пароля.");
+            PasswordError = $"Непредвиденная ошибка: {ex.Message}";
+        }
+        finally
+        {
+            Loading = false;
+            CloseModal();
+        }
+    }
+
+
+    private void SetContactForEdit(ContactDto contact)
+    {
+        // Устанавливаем ID редактируемого контакта
+        EditingContactId = contact.Id;
+
+        // Заполняем модель формы данными контакта
+        ContactModel.Type = contact.Type;
+        ContactModel.Value = contact.Value;
+
+        ContactError = string.Empty;
+        StateHasChanged(); // Обновляем форму
+    }
+    private async Task HandleAddOrUpdateContact()
+    {
+        if (CurrentUserId is null || ContactModel.Value is null) return;
+
+        Loading = true;
+        ContactError = string.Empty;
+
+        try
+        {
+            if (EditingContactId.HasValue)
+            {
+                // ⭐️ РЕЖИМ РЕДАКТИРОВАНИЯ (UPDATE)
+                var originalContact = CurrentContacts.FirstOrDefault(c => c.Id == EditingContactId.Value);
+
+                if (originalContact is null)
+                {
+                    ContactError = "Контакт для редактирования не найден.";
+                    return;
+                }
+
+                // Создаем DTO для обновления, используя данные формы (Type, Value)
+                // и сохраняя оригинальные Id, Description, IsPrimary.
+                var updateDto = new ContactDto
+                {
+                    Id = EditingContactId.Value,
+                    Type = ContactModel.Type,
+                    Value = ContactModel.Value,
+                    IsPrimary = originalContact.IsPrimary,
+                    Description = originalContact.Description
+                };
+
+                // Предполагаем, что сервис принимает ContactDto и обновляет его
+                var result = await ContactService.UpdateAsync(CurrentUserId.Value, updateDto);
+
+                if (result.IsSuccess)
+                {
+                    // Обновляем локальный список
+                    var index = CurrentContacts.FindIndex(c => c.Id == EditingContactId.Value);
+                    if (index >= 0)
+                        CurrentContacts[index] = result.Value;
+                }
+                else
+                {
+                    ContactError = $"Ошибка обновления контакта: {result.Error}";
+                }
+            }
+            else
+            {
+                // ⭐️ РЕЖИМ ДОБАВЛЕНИЯ (CREATE)
+                var createDto = new ContactDto
+                {
+                    Type = ContactModel.Type,
+                    Value = ContactModel.Value,
+                    UserId = CurrentUserId.Value
+                };
+
+                var result = await ContactService.AddAsync(CurrentUserId.Value, createDto);
+
+                if (result.IsSuccess)
+                {
+                    CurrentContacts.Add(result.Value);
+                }
+                else
+                {
+                    ContactError = $"Ошибка добавления контакта: {result.Error}";
+                }
+            }
+
+            // Сброс формы после успеха
+            if (ContactError == string.Empty)
+            {
+                EditingContactId = null;
+                ContactModel = new NewContactDto();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Исключение при управлении контактами.");
+            ContactError = $"Непредвиденная ошибка: {ex.Message}";
+        }
+        finally
+        {
+            Loading = false;
+            StateHasChanged();
+        }
+    }
+    private async Task HandleDeleteContact(Guid contactId)
+    {
+        if (CurrentUserId is null) return;
+        Loading = true;
+        ContactError = string.Empty;
+
+        try
+        {
+            // Предполагается, что ContactService инжектирован
+            var result = await ContactService.DeleteAsync(CurrentUserId.Value, contactId);
+
+            if (result.IsSuccess)
+            {
+                // 1. Удаляем из локального списка (это уже было)
+                CurrentContacts.RemoveAll(c => c.Id == contactId);
+
+                // 2. 🔥 НОВОЕ ИСПРАВЛЕНИЕ: Сброс режима редактирования, если удален текущий контакт
+                if (EditingContactId.HasValue && EditingContactId.Value == contactId)
+                {
+                    EditingContactId = null;
+                    ContactModel = new NewContactDto(); // Сбрасываем поля формы
+                }
+            }
+            else
+            {
+                ContactError = $"Ошибка удаления контакта: {result.Error}";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Исключение при удалении контакта.");
+            ContactError = $"Непредвиденная ошибка: {ex.Message}";
+        }
+        finally
+        {
+            Loading = false;
+            StateHasChanged();
+        }
+    }
+    // Вспомогательный метод для отображения иконок контактов
+    private string GetContactIcon(ContactType type) => type switch
+    {
+        ContactType.Email => "bi bi-envelope-fill",
+        ContactType.Phone => "bi bi-telephone-fill",
+        ContactType.Telegram => "bi bi-telegram",
+        ContactType.LinkedIn => "bi bi-linkedin",
+        _ => "bi bi-link"
+    };
+}

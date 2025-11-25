@@ -1,0 +1,268 @@
+﻿@page "/"
+
+<PageTitle>Welcome</PageTitle>
+
+
+<div class="container my-5">
+    <!-- Hero -->
+    <section class="row align-items-center py-5">
+        <div class="col-lg-7">
+            <h1 class="display-5 fw-bold">Найдите рекрутёра под любую задачу</h1>
+            <p class="lead text-muted">Платформа профессиональных рекрутёров. Быстрый подбор специалистов по подбору — без регистрации для HR-агентств и компаний.</p>
+
+            <AuthorizeView Context="WelcomeAuthorizeView">
+                <NotAuthorized>
+                    <div class="d-flex gap-2 mt-4">
+                        <a class="btn btn-primary btn-lg" href="/search">🔍 Начать поиск</a>
+                        <a class="btn btn-outline-secondary btn-lg" href="/request-access">✉️ Запросить аккаунт</a>
+                    </div>
+                    <small class="d-block mt-3 text-muted">Аккаунты рекрутёров проходят валидацию администратором после заполнения всех необходимых полей — это гарантирует качество и проверку профилей.</small>
+                </NotAuthorized>
+                <Authorized>
+                    @* Проверяем, авторизован ли пользователь как Рекрутер *@
+                    <AuthorizeView Roles="@ApplicationRole.Admin" Context="AdminWelcomeAuthorizeView">
+                        <Authorized>
+                            @* Пользователь - Администратор *@
+                            <div class="d-flex gap-2 mt-4">
+                                <a class="btn btn-primary btn-lg" href="/search">🔍 Начать поиск</a>
+                            </div>
+                            <small class="d-block mt-3 text-muted">У вас есть полный доступ к поиску кандидатов.</small>
+                        </Authorized>
+                    </AuthorizeView>
+
+
+                    <AuthorizeView Roles="@ApplicationRole.Recruiter" Context="RecruiterWelcomeAuthorizeView">
+                        <Authorized>
+                            @* Пользователь - Рекрутер *@
+                            <div class="d-flex gap-2 mt-4">
+                                <a class="btn btn-primary btn-lg" href="/search">🔍 Начать поиск</a>
+                            </div>
+                            <small class="d-block mt-3 text-muted">У вас есть полный доступ к поиску кандидатов.</small>
+                        </Authorized> 
+                    </AuthorizeView>
+
+
+                    <AuthorizeView Roles="@ApplicationRole.Candidate" Context="CandidateWelcomeAuthorizeView">
+                        <Authorized>
+                            @* Пользователь - Кандидат. Показываем ему возможность запросить аккаунт рекрутера. *@
+                            <div class="d-flex gap-2 mt-4">
+                                <a class="btn btn-outline-primary btn-lg" href="/request-access">💼 Запросить аккаунт Рекрутера</a>
+                            </div>
+                            <small class="d-block mt-3 text-muted">Хотите искать кандидатов? Запросите аккаунт Рекрутера, заполните необходимые данные и дождитесь подтверждения администратора.</small>
+                        </Authorized>
+                    </AuthorizeView>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+        <div class="col-lg-5 d-none d-lg-block text-center">
+            <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Иллюстрация поиска рекрутёров. Отзывчивый дизайн">
+
+                <rect x="0" y="0" width="320" height="200" rx="10" fill="#ffffff" stroke="#e9ecef" stroke-width="1.5" />
+
+                <g transform="translate(20, 20)">
+
+                    <rect x="0" y="0" width="280" height="60" rx="6" fill="#f8f9fa" stroke="#ced4da" stroke-width="1" />
+                    <circle cx="250" cy="30" r="22" fill="#e9ecef" />
+
+                    <g transform="translate(237, 15) scale(1.6)">
+                        <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#adb5bd" />
+                        <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#adb5bd" />
+                    </g>
+
+                    <rect x="20" y="20" width="150" height="12" rx="3" fill="#6c757d" />
+                    <rect x="20" y="38" width="120" height="8" rx="2" fill="#adb5bd" />
+
+                    <rect x="0" y="75" width="280" height="1" fill="#e9ecef" />
+
+                    <rect x="0" y="90" width="280" height="60" rx="6" fill="#f8f9fa" stroke="#ced4da" stroke-width="1" />
+                    <circle cx="250" cy="121" r="22" fill="#e9ecef" />
+
+                    <g transform="translate(237, 105) scale(1.6)">
+                        <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#adb5bd" />
+                        <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#adb5bd" />
+                    </g>
+
+                    <rect x="20" y="110" width="150" height="12" rx="3" fill="#6c757d" />
+                    <rect x="20" y="128" width="120" height="8" rx="2" fill="#adb5bd" />
+
+                </g>
+            </svg>
+        </div>
+    </section>
+
+    <!-- How it works: 3 steps -->
+    <section class="row text-center py-4">
+        <div class="col-12 mb-3">
+            <h2 class="h4">Как это работает</h2>
+            <p class="text-muted">Коротко — чтобы вы сразу поняли сценарий использования.</p>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="p-3 h-100 border rounded">
+                <div class="fs-1">🛡️</div>
+                <h3 class="h6 mt-2">Проверенные профили</h3>
+                <p class="small text-muted mb-0">Администратор добавляет и модератирует аккаунты рекрутеров.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="p-3 h-100 border rounded">
+                <div class="fs-1">🔎</div>
+                <h3 class="h6 mt-2">Поиск по фильтрам</h3>
+                <p class="small text-muted mb-0">Фильтрация по специализации, опыту, индустрии и формату работы.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="p-3 h-100 border rounded">
+                <div class="fs-1">✉️</div>
+                <h3 class="h6 mt-2">Связь и сотрудничество</h3>
+                <p class="small text-muted mb-0">Доступ к контактам и портфолио — связываетесь напрямую.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advantages -->
+    <section class="row text-center py-4">
+        <div class="col-12 mb-4">
+            <h2 class="h4">Почему это удобно</h2>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="p-5 h-100 rounded card-glow d-flex flex-column justify-content-center" style="border-bottom: 4px solid var(--bs-primary);">
+                <div class="fs-1 text-primary">🥇</div>
+                <h3 class="h6 mt-3 fw-bold">Качество</h3>
+                <p class="small mb-0 text-secondary">Только проверенные рекрутеры.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="p-5 h-100 rounded card-glow d-flex flex-column justify-content-center" style="border-bottom: 4px solid var(--bs-success);">
+                <div class="fs-1 text-success">⏱️</div>
+                <h3 class="h6 mt-3 fw-bold">Скорость</h3>
+                <p class="small mb-0 text-secondary">Экономия времени на подборе.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="p-5 h-100 rounded card-glow d-flex flex-column justify-content-center" style="border-bottom: 4px solid var(--bs-info);">
+                <div class="fs-1 text-info">🎯</div>
+                <h3 class="h6 mt-3 fw-bold">Фокус</h3>
+                <p class="small mb-0 text-secondary">Чёткие профили и кейсы.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="p-5 h-100 rounded card-glow d-flex flex-column justify-content-center" style="border-bottom: 4px solid var(--bs-warning);">
+                <div class="fs-1 text-warning">👍</div>
+                <h3 class="h6 mt-3 fw-bold">Простота</h3>
+                <p class="small mb-0 text-secondary">Поиск доступен без регистрации для HR.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Static news: use News component -->
+    <section class="row py-4">
+        <div class="col-12">
+            <h2 class="h5">Новости платформы</h2>
+
+            <!-- News component is expected to render 2-3 static cards. -->
+            <div class="news-grid-container mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h3 class="h6 mb-0">📢 Новости платформы</h3>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="NavigateToNewsList">Все новости →</button>
+                </div>
+
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    @for (int i = 0; i < MaxNewsItems; i++)
+                    {
+                        var news = i < DynamicNews.Count ? DynamicNews[i] : null;
+
+                        <div class="col">
+                            @if (news is not null)
+                            {
+                                <article class="news-tile card h-100 border rounded-3 p-3 d-flex flex-column"
+                                         role="button" tabindex="0"
+                                         @onclick="() => NavigateToNewsDetails(news.Id)"
+                                         @onkeydown="@(e => OnCardKeyDown(e, news.Id))"
+                                         aria-label="@($"Новость: {news.Title}")">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <span class="badge @GetBadgeClass(news.Level) fw-semibold text-uppercase small">@news.Level</span>
+                                        <small class="text-muted">@news.CreatedAt.ToString("dd.MM.yyyy")</small>
+                                    </div>
+
+                                    <h4 class="news-title h6 fw-bold mb-2">@news.Title</h4>
+                                    <p class="news-desc small text-muted mb-3">@news.Text</p>
+
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">— @news.Author</small>
+                                        <small class="text-primary small">Читать →</small>
+                                    </div>
+                                </article>
+                            }
+                            else
+                            {
+                                <div class="card placeholder-tile h-100 border rounded-3 p-3 d-flex flex-column text-center text-muted">
+                                    <div class="mb-auto d-flex align-items-center justify-content-center" style="min-height:56px;">
+                                        <small class="mb-0">Нет новости</small>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <small class="small text-muted">Здесь появятся свежие обновления</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <hr />
+    <footer class="text-center text-muted small py-3">© @DateTime.Now.Year — Платформа рекрутеров. Все права защищены.</footer>
+</div>
+
+@code {
+    private const int MaxNewsItems = 9;
+    private List<NewsPostDto> DynamicNews { get; set; } = new();
+    [Inject] private INewsService Service { get; set; } = default!;
+    [Inject] private ILogger<Welcome> logger { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Service.GetNewsPageAsync(0, MaxNewsItems);
+        result.Match(
+            success => DynamicNews = success.Items.ToList(),
+            error =>
+            {
+                DynamicNews = new List<NewsPostDto>();
+                logger.LogError("Ошибка при загрузке новостей для BoardNews: {Error}", error);
+            }
+        );
+    }
+
+    // --- Стили бейджа/бордера соответствуют уровням (лёгкая логика) ---
+    private string GetBadgeClass(NewsLevel level) => level switch
+    {
+        NewsLevel.HotFix => "bg-danger",
+        NewsLevel.Release => "bg-success",
+        NewsLevel.Update => "bg-info text-dark",
+        _ => "bg-secondary"
+    };
+
+    // Навигация: детали новости и список
+    private void NavigateToNewsList() => NavigationManager.NavigateTo("/news");
+    private void NavigateToNewsDetails(Guid id) => NavigationManager.NavigateTo($"/news?id={id}");
+
+    // Клавиатурная поддержка: Enter -> переход
+    private void OnCardKeyDown(KeyboardEventArgs e, Guid id)
+    {
+        if (e.Key == "Enter" || e.Key == " ")
+        {
+            NavigateToNewsDetails(id);
+        }
+    }
+}

@@ -1,0 +1,6 @@
+wwwroot\app.css
+wwwroot\app.js
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\favicon.png
+wwwroot\Uploads\4e9e60d3-954b-458a-99c2-a033ec9a880e\a52e85fb-d04e-4791-9968-f6da0bb299ef.jpg
